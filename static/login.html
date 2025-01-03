@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - FlipZonlysis{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-75">
+        <div class="col-12 col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-3">
+                <div class="card-header bg-primary bg-gradient text-white text-center py-4">
+                    <h2 class="h3 mb-0">Welcome Back</h2>
+                    <p class="mb-0 mt-2 text-white-50">Sign in to your FlipZonlysis account</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-floating mb-4">
+                            <input type="text" name="username" class="form-control" id="username" required>
+                            <label for="username">
+                                <i class="bi bi-person-fill me-2"></i>Username
+                            </label>
+                            <div class="invalid-feedback">
+                                Please enter your username.
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input type="password" name="password" class="form-control" id="password" required>
+                            <label for="password">
+                                <i class="bi bi-lock-fill me-2"></i>Password
+                            </label>
+                            <div class="invalid-feedback">
+                                Please enter your password.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted">
+                            Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-primary text-decoration-none">
+                                Create Account<i class="bi bi-arrow-right ms-2"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Your connection to FlipZonlysis is secure
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}FlipZonlysis{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="display-4">Welcome to the FlipZonlysis</h1>
+        <p class="lead">Effortlessly scrape, analyze, and save product data tailored for you.</p>
+        <a href="/register" class="btn btn-light btn-lg mt-3">Get Started</a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card p-3 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">User-Friendly</h5>
+                        <p class="card-text">Simple and intuitive interface for all your scraping needs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Secure</h5>
+                        <p class="card-text">Save your data securely, separated for each user.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Comprehensive Dashboard</h5>
+                        <p class="card-text">Analyze and download data with ease.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="text-center py-5">
+    <div class="container">
+        <h2>Ready to get started?</h2>
+        <p class="mb-4">Sign up today and begin your data scraping journey!</p>
+        <a href="register" class="btn btn-primary btn-lg">Sign Up</a>
+    </div>
+</section>
+{% endblock %}
+

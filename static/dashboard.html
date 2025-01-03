@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - FlipZonlysis{% endblock %}
+{% block extra_css %}
+<style>
+    .sidebar {
+        height: 100vh;
+        background: #2c3e50;
+        color: white;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, .8);
+    }
+
+    .nav-link:hover {
+        color: white;
+    }
+
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stats-card {
+        border-left: 4px solid;
+    }
+
+    .amazon-stats {
+        border-color: #ff9900;
+    }
+
+    .flipkart-stats {
+        border-color: #2874f0;
+    }
+
+    /* Responsive adjustments */
+    .sidebar {
+        position: sticky;
+        top: 0;
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            height: auto;
+        }
+        .nav-link {
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-card {
+            margin-bottom: 15px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    }
+
+    #view-section {
+        padding: 20px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #ff6ec4, #7873f5);
+        color: white;
+        display: none;
+    }
+    #view-section {
+    display: none;
+    }
+
+    #view-section.active {
+        display: block;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-0">
+            <div class="p-4">
+                <!-- <h6> Welcome, <b>{{user.username}} {{user.last_name}}</b></h6> -->
+                <p>Welcome, <b>{{user.username}}</b></p>
+                <hr>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#scrape">
+                            <i class="fas fa-search me-2"></i>Scrape Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recent">
+                            <i class="fas fa-history me-2"></i>Recent Scrape
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#history">
+                            <i class="fas fa-history me-2"></i>History
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="container mt-4">
+                {% if messages %}
+                    <div class="row">
+                        <div class="col-12">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>            
+            <!-- View Section -->
+            <section id="view-section" class="py-4 {% if request.GET.view_product_id %}active{% endif %}">
+                {% if selected_product %}
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Scraping Details for <b>{{ selected_product.product_name }}</b></h5>
+                        <div class="row g-4">
+                            <!-- Amazon Stats -->
+                            <div class="col-md-6 col-sm-12">
+                                <div class="card stats-card amazon-stats">
+                                    <div class="card-body">
+                                        <h6 class="text-muted"><b> Amazon Statistics </b></h6>
+                                        <pre class="mt-2">{{ selected_product.amazon_stats }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Flipkart Stats -->
+                            <div class="col-md-6 col-sm-12">
+                                <div class="card stats-card flipkart-stats">
+                                    <div class="card-body">
+                                        <h6 class="text-muted"><b> Flipkart Statistics </b></h6>
+                                        <pre class="mt-2">{{ selected_product.flipkart_stats }}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Price Chart -->
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Price Comparison</h5>
+                                        <img src="{{ selected_product.price_distribution_chart.url }}" 
+                                             class="img-fluid" alt="Price Distribution">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Scrape Section -->
+            <section id="scrape" class="py-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Search Product</h5>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control form-control-lg"
+                                    placeholder="Enter product name..." name="product_name" required>
+                                <button class="btn btn-primary btn-lg" type="submit">
+                                    <i class="fas fa-search me-1"></i>Scrape
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Section -->
+            {% if history %}
+            <section id="recent" class="py-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Recent Scraping Statistics for <b>{{ history.0.product_name }}</b></h5>
+                        <section id="recent details">
+                            <div class="row g-4">
+                                <!-- Stats Cards -->
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="card stats-card amazon-stats">
+                                        <div class="card-body">
+                                            <h6 class="text-muted"><b> Amazon Statistics </b></h6>
+                                            <pre class="mt-2">{{ history.0.amazon_stats }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12">
+                                    <div class="card stats-card flipkart-stats">
+                                        <div class="card-body">
+                                            <h6 class="text-muted"><b> Flipkart Statistics </b></h6>
+                                            <pre class="mt-2">{{ history.0.flipkart_stats }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Chart -->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Price Comparison</h5>
+                                            <img src="{{ history.0.price_distribution_chart.url }}"
+                                                class="img-fluid" alt="Price Distribution">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+            {%else%}
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <p><b> No Recent Scrapes.</b></p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- History Section -->
+            <section id="history" class="py-4">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">Search History</h5>
+                        {% if history %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Product Name</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                                <th>Download</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in history %}
+                                            <tr>
+                                                <td>{{ item.product_name }}</td>
+                                                <td>{{ item.created_at|date:"M d, Y" }}</td>
+                                                <td>
+                                                    <div class="d-flex justify-content-start">
+                                                        <!-- View Button -->
+                                                        <a href="?view_product_id={{ item.id }}" class="btn btn-sm btn-outline-primary me-2" >
+                                                            <i class="fas fa-eye"></i> View
+                                                        </a>
+                                                        <!-- Delete Button -->
+                                                        <form method="POST" class="d-inline">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="product_id" value="{{ item.id }}">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                                <i class="fas fa-trash"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                                
+                                                <td>
+                                                    <a href="{{ item.amazon_data.url }}"
+                                                        class="btn btn-sm btn-outline-secondary"
+                                                        download="{{ item.product_name.url|slugify }}_amazon_data.csv">
+                                                        <i class="fas fa-eye"></i> Amazon Data
+                                                    </a>
+                                                    <a href="{{ item.flipkart_data.url }}"
+                                                        class="btn btn-sm btn-outline-warning"
+                                                        download="{{ item.product_name.url|slugify }}_flipkart_data.csv">
+                                                        <i class="fas fa-eye"></i> Flipkart Data
+                                                    </a>
+                                                    <a href="{{ item.price_comparison.url }}"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        download="{{ item.price_comparison.url|slugify }}_analyzed_data.csv">
+                                                        <i class="fas fa-eye"></i> Analyzed Data
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                        {% else %}
+                            <div class="card shadow">
+                                <div class="card-body">
+                
+                                    <p><b> No Search History.</b></p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+{% endblock %}
