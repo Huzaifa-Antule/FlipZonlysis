@@ -1,6 +1,8 @@
+# netlify.toml
+
 [build]
-  publish = "dist"
-  command = "python manage.py collectstatic && python manage.py build"
+  publish = "dist"  # Specify where your static files are located after build
+  command = "python manage.py collectstatic --noinput && python manage.py build"  # Automatically accept collectstatic prompt
 
 [[redirects]]
   from = "/*"
