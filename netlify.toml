@@ -2,7 +2,7 @@
 
 [build]
   publish = "dist"  # Specify where your static files are located after build
-  command = "python manage.py collectstatic --noinput && python manage.py build"  # Automatically accept collectstatic prompt
+  command = "python manage.py collectstatic --noinput"  # Automatically accept collectstatic prompt
 
 [[redirects]]
   from = "/*"
