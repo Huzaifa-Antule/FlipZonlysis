@@ -1,7 +1,7 @@
 # netlify.toml
 
 [build]
-  publish = "static"  # Specify where your static files are located after build
+  publish = "dist"  # Specify where your static files are located after build
   command = "python manage.py collectstatic --noinput && mkdir -p dist && cp Scraping/templates/index.html dist/"
 
 [[redirects]]
