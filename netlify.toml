@@ -1,9 +1,9 @@
 # netlify.toml
 
 [build]
-[build]
-  command = "mkdir -p static && cp -r Scraping/templates/* static/"
+  command = "mkdir -p static && python manage.py collectstatic --noinput && cp -r Scraping/templates/* static/"
   publish = "static"
+
 
 [[redirects]]
   from = "/*"
